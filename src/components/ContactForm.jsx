@@ -1,41 +1,66 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import Form from './styledComponents/Form';
 import Input from './styledComponents/Input';
 import Button from './styledComponents/Button';
 
-const ContactForm = ({ onAddContact }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+class ContactForm extends Component {
+  constructor(props) {
+    super(props);
+    // Inicialización del estado con el nombre y el número del contacto
+    this.state = {
+      name: '',
+      number: '',
+    };
+  }
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const id = Math.random().toString(36).substr(2, 9);
-    onAddContact({ id, name, number });
-    setName('');
-    setNumber('');
+  // Método para manejar el cambio en los campos de entrada
+  handleChange = e => {
+    this.setState({ [e.target.name]: e.target.value });
   };
 
-  return (
-    <Form onSubmit={handleSubmit}>
-      <Input
-        type="text"
-        placeholder="Enter name"
-        value={name}
-        onChange={e => setName(e.target.value)}
-        required
-      />
-      <Input
-        type="tel"
-        placeholder="Enter phone number"
-        value={number}
-        onChange={e => setNumber(e.target.value)}
-        pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-        title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-        required
-      />
-      <Button type="submit">Add Contact</Button>
-    </Form>
-  );
-};
+  // Método para manejar el envío del formulario
+  handleSubmit = e => {
+    e.preventDefault();
+    const { name, number } = this.state;
+    // Generar un ID único para el contacto
+    const id = Math.random().toString(36).substr(2, 9);
+    // Llamar a la función onAddContact pasando el nuevo contacto
+    this.props.onAddContact({ id, name, number });
+    // Reiniciar los campos de nombre y número a vacío
+    this.setState({ name: '', number: '' });
+  };
+
+  render() {
+    const { name, number } = this.state;
+
+    return (
+      // Formulario para agregar un nuevo contacto
+      <Form onSubmit={this.handleSubmit}>
+        {/* Campo de entrada para el nombre */}
+        <Input
+          type="text"
+          name="name"
+          placeholder="Enter name"
+          value={name}
+          onChange={this.handleChange}
+          required
+        />
+        {/* Campo de entrada para el número de teléfono */}
+        <Input
+          type="tel"
+          name="number"
+          placeholder="Enter phone number"
+          value={number}
+          onChange={this.handleChange}
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+          required
+        />
+        {/* Botón para enviar el formulario */}
+        <Button type="submit">Add Contact</Button>
+      </Form>
+    );
+  }
+}
 
 export default ContactForm;
